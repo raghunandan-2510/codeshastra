@@ -1,6 +1,4 @@
-import tweepy
-import sys
-import csv
+import tweepy 
 # Fill the X's with the credentials obtained by  
 # following the above mentioned procedure. 
 consumer_key = "wMULWQ6jm5D3JsFryzD70ghq5" 
@@ -9,7 +7,7 @@ access_key = "2807032788-CkAPkPzhrBzIrw4uMDFtIEk2AVU3iIXPxdrqtlP"
 access_secret = "1gE3NmecquRE6oKIwLqdp4pC80Uyzw2JFw6qhHWbwCGCt"
   
 # Function to extract tweets 
-def get_tweets(Mr_sarcastastic): 
+def get_tweets(MrSarcastastic): 
           
         # Authorization to consumer key and consumer secret 
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret) 
@@ -20,22 +18,26 @@ def get_tweets(Mr_sarcastastic):
         # Calling api 
         api = tweepy.API(auth) 
   
-        # 20 tweets to be extracted 
+        # 200 tweets to be extracted 
         number_of_tweets=20
-        tweets = api.user_timeline(screen_name=Mr_sarcastastic) 
+        tweets = api.user_timeline(screen_name=MrSarcastastic) 
   
         # Empty Array 
         tmp=[]  
   
         # create array of tweet information: username,  
         # tweet id, date/time, text 
-        #search tweets related to fed
-        search = tweepy.Cursor(api.search, q="from:@realDonaldTrump The Fed", lang="en").items()
-        tweets_for_csv = [[tweet.text.encode("utf-8")] for tweet in search] # CSV file created  
-        print ("writing to {0}_tweets.csv".format(Mr_sarcastastic))
-        with open("{0}_tweets.csv".format(Mr_sarcastastic) , 'w+') as file:
-                writer = csv.writer(file, delimiter='|')
-                writer.writerows(tweets_for_csv)
+        tweets_for_csv = [tweet.text for tweet in tweets] # CSV file created  
+        tweets = tweepy.Cursor(api.user_timeline, id="realDonaldTrump").items(500)
+        for j in tweets: 
+  
+            # Appending tweets to the empty array tmp 
+            if (not j.retweeted) and ('RT @' not in j.text):
+                if "the Fed" in j.text:
+                    tmp.append(j.text)  
+  
+        # Printing the tweets 
+        print(tmp) 
   
   
 # Driver code 
@@ -43,4 +45,4 @@ if __name__ == '__main__':
   
     # Here goes the twitter handle for the user 
     # whose tweets are to be extracted. 
-    get_tweets("@realDonaldTrump") 
+    get_tweets("@realDonaldTrump")  
